@@ -23,7 +23,7 @@ jobs:
       - name: Build Site
         shell: bash
         run: |
-          yarn --cwd apps/site ci:build
+          yarn --cwd apps/next ci:build
 
       - name: Deploy Website
         uses: peaceiris/actions-gh-pages@v3
