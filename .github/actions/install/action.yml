@@ -20,4 +20,4 @@ runs:
 
     - name: Build JS
       shell: bash
-      run: yarn build:js
+      run: yarn build
