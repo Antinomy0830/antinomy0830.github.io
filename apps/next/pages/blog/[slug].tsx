@@ -1,0 +1,52 @@
+import { Frontmatter } from "frontmatter"
+import { getAllFrontmatter, getMdxBySlug } from "lib/mdx"
+import { getMDXComponent } from 'mdx-bundler/client'
+import React from "react"
+
+export default function BlogSlug(props: BlogPost) {
+    const Component = React.useMemo(() => getMDXComponent(props.code), [props.code])
+  
+    return (
+      
+        <Component />
+      
+    )
+  }
+
+
+export type BlogPost = {
+    frontmatter: Frontmatter
+    code: any
+    relatedPosts?: Frontmatter[]
+    Component?: any
+}
+
+export async function getStaticPaths() {
+    const frontmatters = getAllFrontmatter('blog')
+    return {
+      paths: frontmatters.map(({ slug }) => ({
+        params: { slug: slug.replace('blog/', '') },
+      })),
+      fallback: false,
+    }
+  }
+  
+  export async function getStaticProps(context) {
+    const { frontmatter, code } = await getMdxBySlug('blog', context.params.slug)
+    const relatedPosts = frontmatter.relatedIds
+      ? await Promise.all(
+          frontmatter.relatedIds.map(async (id) => {
+            const { frontmatter } = await getMdxBySlug('blog', id)
+            return frontmatter
+          })
+        )
+      : null
+    return {
+      props: {
+        frontmatter,
+        code,
+        relatedPosts,
+      },
+    }
+  }
+  
